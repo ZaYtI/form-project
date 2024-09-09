@@ -36,7 +36,7 @@ export class UserService {
     return await this.entityManager.save(user);
   }
 
-  remove(id: number) {
+  async remove(id: number) {
     return this.userRepository.delete(id);
   }
 }
