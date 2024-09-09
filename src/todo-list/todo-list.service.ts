@@ -30,7 +30,7 @@ export class TodoListService {
     const todoList = await this.todoListRepository.findOneByOrFail({ id });
 
     todoList.title = updateTodoListDto.title;
-    todoList.color = todoList.color;
+    todoList.color = updateTodoListDto.color;
 
     return await this.entityManager.save(todoList);
   }
