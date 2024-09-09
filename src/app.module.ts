@@ -5,6 +5,7 @@ import { DatabaseModule } from './database/database.module';
 import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
 import { TodoModule } from './todo/todo.module';
+import { TodoListModule } from './todo-list/todo-list.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { TodoModule } from './todo/todo.module';
     DatabaseModule,
     UserModule,
     TodoModule,
+    TodoListModule,
   ],
   controllers: [AppController],
   providers: [AppService],
