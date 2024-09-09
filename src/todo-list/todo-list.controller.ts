@@ -6,10 +6,12 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { TodoListService } from './todo-list.service';
 import { CreateTodoListDto } from './dto/create-todo-list.dto';
 import { UpdateTodoListDto } from './dto/update-todo-list.dto';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('todo-list')
 export class TodoListController {
@@ -20,6 +22,7 @@ export class TodoListController {
     return this.todoListService.create(createTodoListDto);
   }
 
+  @UseGuards(AuthGuard)
   @Get()
   findAll() {
     return this.todoListService.findAll();
