@@ -34,7 +34,7 @@ export class TodoService {
     return await this.entityManager.save(todo);
   }
 
-  remove(id: number) {
+  async remove(id: number) {
     return this.todoRepository.delete({ id });
   }
 }
