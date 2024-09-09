@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Todo } from 'src/todo/entities/todo.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class TodoList {
@@ -10,6 +11,9 @@ export class TodoList {
 
   @Column()
   color: string;
+
+  @OneToMany(() => Todo, (todoItem) => todoItem.todoList)
+  todoItems: Todo[];
 
   constructor(todoList: Partial<TodoList>) {
     Object.assign(this, todoList);

@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { TodoList } from 'src/todo-list/entities/todo-list.entity';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Todo {
@@ -13,6 +14,12 @@ export class Todo {
 
   @Column({ default: false })
   isComplete: boolean;
+
+  @ManyToOne(() => TodoList, (todoList) => todoList.todoItems, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
+  todoList: TodoList;
 
   constructor(todo: Partial<Todo>) {
     Object.assign(this, todo);
