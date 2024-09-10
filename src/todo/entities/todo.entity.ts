@@ -1,5 +1,11 @@
 import { TodoList } from 'src/todo-list/entities/todo-list.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class Todo {
@@ -12,13 +18,17 @@ export class Todo {
   @Column()
   desc: string;
 
-  @Column({ default: false })
+  @Column({ default: false, name: 'is_complete' })
   isComplete: boolean;
+
+  @Column({ name: 'todo_list_id', nullable: false })
+  todoListId: number;
 
   @ManyToOne(() => TodoList, (todoList) => todoList.todoItems, {
     nullable: false,
     onDelete: 'CASCADE',
   })
+  @JoinColumn({ name: 'todo_list_id' })
   todoList: TodoList;
 
   constructor(todo: Partial<Todo>) {

@@ -4,6 +4,7 @@ import { UpdateTodoListDto } from './dto/update-todo-list.dto';
 import { EntityManager, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TodoList } from './entities/todo-list.entity';
+import { User } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class TodoListService {
@@ -12,14 +13,27 @@ export class TodoListService {
     @InjectRepository(TodoList)
     private todoListRepository: Repository<TodoList>,
   ) {}
-  async create(createTodoListDto: CreateTodoListDto) {
+  async create(createTodoListDto: CreateTodoListDto, userRequest: any) {
+    const user = await this.entityManager.findOne(User, {
+      where: { id: userRequest.userId },
+    });
+
     const todoList = new TodoList(createTodoListDto);
+
+    todoList.addUser(user);
 
     return await this.entityManager.save(todoList);
   }
 
-  async findAll() {
-    return this.todoListRepository.find();
+  async findAll(userRequest) {
+    return this.todoListRepository.find({
+      relations: ['users'],
+      where: {
+        users: {
+          id: userRequest.userId,
+        },
+      },
+    });
   }
 
   async findOne(id: number) {

@@ -7,25 +7,27 @@ import {
   Param,
   Delete,
   UseGuards,
+  Request,
 } from '@nestjs/common';
 import { TodoListService } from './todo-list.service';
 import { CreateTodoListDto } from './dto/create-todo-list.dto';
 import { UpdateTodoListDto } from './dto/update-todo-list.dto';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('todo-list')
 export class TodoListController {
   constructor(private readonly todoListService: TodoListService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() createTodoListDto: CreateTodoListDto) {
-    return this.todoListService.create(createTodoListDto);
+  create(@Body() createTodoListDto: CreateTodoListDto, @Request() req) {
+    return this.todoListService.create(createTodoListDto, req.user);
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Get()
-  findAll() {
-    return this.todoListService.findAll();
+  findAll(@Request() req) {
+    return this.todoListService.findAll(req.user);
   }
 
   @Get(':id')
