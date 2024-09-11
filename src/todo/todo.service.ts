@@ -14,8 +14,10 @@ export class TodoService {
     return this.todoRepository.create(createTodoDto);
   }
 
-  async findAll() {
-    return this.todoRepository.find();
+  async findAllByListId(id: number) {
+    return this.todoRepository.findBy({
+      todoListId: id,
+    });
   }
 
   async findOne(id: number) {

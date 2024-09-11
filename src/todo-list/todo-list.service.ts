@@ -1,4 +1,9 @@
-import { Inject, Injectable } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateTodoListDto } from './dto/create-todo-list.dto';
 import { UpdateTodoListDto } from './dto/update-todo-list.dto';
 import { Repository } from 'typeorm';
@@ -29,7 +34,7 @@ export class TodoListService {
     role: UserRole;
   }) {
     return this.todoListRepository.find({
-      relations: ['users'],
+      relations: ['users', 'todoItems'],
       where: {
         users: {
           id: userRequest.userId,
@@ -38,20 +43,58 @@ export class TodoListService {
     });
   }
 
-  async findOne(id: number) {
-    return this.todoListRepository.findOneByOrFail({ id });
+  async findOne(listId: number, userId: number) {
+    try {
+      return await this.todoListRepository.findOneOrFail({
+        relations: ['todoItems'],
+        where: {
+          id: listId,
+          users: {
+            id: userId,
+          },
+        },
+      });
+    } catch (error) {
+      throw new NotFoundException();
+    }
   }
 
-  async update(id: number, updateTodoListDto: UpdateTodoListDto) {
-    const todoList = await this.todoListRepository.findOneByOrFail({ id });
+  async update(
+    listId: number,
+    userId: number,
+    updateTodoListDto: UpdateTodoListDto,
+  ) {
+    try {
+      const todoList = await this.findOne(listId, userId);
 
-    todoList.title = updateTodoListDto.title;
-    todoList.color = updateTodoListDto.color;
+      todoList.title = updateTodoListDto.title;
+      todoList.color = updateTodoListDto.color;
 
-    return await this.todoListRepository.save(todoList);
+      return await this.todoListRepository.save(todoList);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException();
+      } else {
+        throw new InternalServerErrorException();
+      }
+    }
   }
 
-  async remove(id: number) {
-    return this.todoListRepository.delete({ id });
+  async remove(listId: number, userId: number) {
+    try {
+      const todoList = await this.findOne(listId, userId);
+
+      await this.todoListRepository.delete(todoList.id);
+
+      return {
+        message: 'Deleted Successfully',
+      };
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException();
+      } else {
+        throw new InternalServerErrorException();
+      }
+    }
   }
 }
