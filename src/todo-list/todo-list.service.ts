@@ -18,14 +18,15 @@ export class TodoListService {
     private todoListRepository: Repository<TodoList>,
     private readonly userService: UserService,
   ) {}
+
   async create(createTodoListDto: CreateTodoListDto, userRequest: any) {
     const user = await this.userService.findOne(userRequest.userId);
 
-    const todoList = new TodoList(createTodoListDto);
+    const todoList = this.todoListRepository.create(createTodoListDto);
 
-    todoList.addUser(user);
+    todoList.users = [user];
 
-    return this.todoListRepository.create(todoList);
+    return await this.todoListRepository.save(todoList);
   }
 
   async findAll(userRequest: {
