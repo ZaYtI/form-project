@@ -1,19 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
-import { EntityManager, Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { Todo } from './entities/todo.entity';
 
 @Injectable()
 export class TodoService {
   constructor(
-    private readonly entityManager: EntityManager,
-    @InjectRepository(Todo) private todoRepository: Repository<Todo>,
+    @Inject('TODO_REPOSITORY')
+    private todoRepository: Repository<Todo>,
   ) {}
   async create(createTodoDto: CreateTodoDto) {
-    const todo = new Todo(createTodoDto);
-    return await this.entityManager.save(todo);
+    return this.todoRepository.create(createTodoDto);
   }
 
   async findAll() {
@@ -31,7 +29,7 @@ export class TodoService {
     todo.desc = updateTodoDto.desc;
     todo.isComplete = updateTodoDto.isComplete;
 
-    return await this.entityManager.save(todo);
+    return await this.todoRepository.save(todo);
   }
 
   async remove(id: number) {

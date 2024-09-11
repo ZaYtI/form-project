@@ -1,6 +1,7 @@
 import { Exclude } from 'class-transformer';
 import { TodoList } from 'src/todo-list/entities/todo-list.entity';
 import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { UserRole } from '../enum/roles.enum';
 
 @Entity()
 export class User {
@@ -22,6 +23,10 @@ export class User {
 
   @Column()
   birthDate: Date;
+
+  @Column({ type: 'enum', enum: UserRole, default: UserRole.USER })
+  @Exclude()
+  role: UserRole;
 
   @ManyToMany(() => TodoList, (todoList) => todoList.users)
   todoLists: TodoList[];

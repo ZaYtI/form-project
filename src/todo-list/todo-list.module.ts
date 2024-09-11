@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { TodoListService } from './todo-list.service';
 import { TodoListController } from './todo-list.controller';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { TodoList } from './entities/todo-list.entity';
-import { AuthModule } from 'src/auth/auth.module';
+import { DatabaseModule } from 'src/database/database.module';
+import { todoListProviders } from './providers/todo-list.providers';
+import { UserModule } from 'src/user/user.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([TodoList]), AuthModule],
+  imports: [DatabaseModule, UserModule],
   controllers: [TodoListController],
-  providers: [TodoListService],
+  providers: [TodoListService, ...todoListProviders],
 })
 export class TodoListModule {}

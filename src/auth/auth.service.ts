@@ -1,11 +1,13 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { CreateUserDto } from 'src/user/dto/create-user.dto';
+// import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
 import { UserService } from 'src/user/user.service';
 import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/user/entities/user.entity';
 import { Payload } from './type/payload.type';
+import { UserRole } from 'src/user/enum/roles.enum';
+import { CreateUserDto } from 'src/user/dto/create-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -31,7 +33,11 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    return this.authenticate(existingUser.id, existingUser.email);
+    return this.authenticate(
+      existingUser.id,
+      existingUser.email,
+      existingUser.role,
+    );
   }
 
   async validateUser(loginDto: LoginDto): Promise<User> {
@@ -53,11 +59,14 @@ export class AuthService {
     return existingUser;
   }
 
-  async authenticate(userId: number, userEmail: string) {
+  async authenticate(userId: number, userEmail: string, role: UserRole) {
     const payload: Payload = {
-      sub: userId,
+      userId: userId,
       email: userEmail,
+      role: role,
     };
+
+    console.log('authenticate', payload);
 
     return { access_token: await this.jwtService.signAsync(payload) };
   }

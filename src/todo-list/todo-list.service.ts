@@ -1,31 +1,33 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { CreateTodoListDto } from './dto/create-todo-list.dto';
 import { UpdateTodoListDto } from './dto/update-todo-list.dto';
-import { EntityManager, Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { TodoList } from './entities/todo-list.entity';
-import { User } from 'src/user/entities/user.entity';
+import { UserRole } from 'src/user/enum/roles.enum';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class TodoListService {
   constructor(
-    private readonly entityManager: EntityManager,
-    @InjectRepository(TodoList)
+    @Inject('TODOLIST_REPOSITORY')
     private todoListRepository: Repository<TodoList>,
+    private readonly userService: UserService,
   ) {}
   async create(createTodoListDto: CreateTodoListDto, userRequest: any) {
-    const user = await this.entityManager.findOne(User, {
-      where: { id: userRequest.userId },
-    });
+    const user = await this.userService.findOne(userRequest.userId);
 
     const todoList = new TodoList(createTodoListDto);
 
     todoList.addUser(user);
 
-    return await this.entityManager.save(todoList);
+    return this.todoListRepository.create(todoList);
   }
 
-  async findAll(userRequest) {
+  async findAll(userRequest: {
+    userId: number;
+    email: string;
+    role: UserRole;
+  }) {
     return this.todoListRepository.find({
       relations: ['users'],
       where: {
@@ -46,7 +48,7 @@ export class TodoListService {
     todoList.title = updateTodoListDto.title;
     todoList.color = updateTodoListDto.color;
 
-    return await this.entityManager.save(todoList);
+    return await this.todoListRepository.save(todoList);
   }
 
   async remove(id: number) {

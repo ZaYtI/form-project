@@ -13,6 +13,7 @@ import { TodoListService } from './todo-list.service';
 import { CreateTodoListDto } from './dto/create-todo-list.dto';
 import { UpdateTodoListDto } from './dto/update-todo-list.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { UserRole } from 'src/user/enum/roles.enum';
 
 @Controller('todo-list')
 export class TodoListController {
@@ -20,13 +21,20 @@ export class TodoListController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() createTodoListDto: CreateTodoListDto, @Request() req) {
+  create(
+    @Body() createTodoListDto: CreateTodoListDto,
+    @Request() req: Request & { user: { userId: number; email: string } },
+  ) {
     return this.todoListService.create(createTodoListDto, req.user);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  findAll(@Request() req) {
+  findAll(
+    @Request()
+    req: Request & { user: { userId: number; email: string; role: UserRole } },
+  ) {
+    console.log(req.user);
     return this.todoListService.findAll(req.user);
   }
 
