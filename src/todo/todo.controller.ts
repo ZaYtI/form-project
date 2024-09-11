@@ -11,7 +11,7 @@ import {
 import { TodoService } from './todo.service';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 
 @UseGuards(JwtAuthGuard)
 @Controller('todo')
@@ -22,11 +22,6 @@ export class TodoController {
   create(@Body() createTodoDto: CreateTodoDto) {
     return this.todoService.create(createTodoDto);
   }
-
-  // @Get()
-  // findAll() {
-  //   return this.todoService.findAll();
-  // }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
