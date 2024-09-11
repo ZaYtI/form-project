@@ -12,6 +12,8 @@ import { UserController } from './user/user.controller';
 import { TodoListController } from './todo-list/todo-list.controller';
 import { TodoController } from './todo/todo.controller';
 import { AuthController } from './auth/auth.controller';
+import { HealthModule } from './health/health.module';
+import { HealthController } from './health/health.controller';
 
 @Module({
   imports: [
@@ -21,6 +23,7 @@ import { AuthController } from './auth/auth.controller';
     TodoModule,
     TodoListModule,
     AuthModule,
+    HealthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
@@ -31,11 +34,11 @@ export class AppModule {
       .apply(LoggerMiddleware)
       .exclude(
         {
-          path: 'signUp',
+          path: '/auth/signUp',
           method: RequestMethod.POST,
         },
         {
-          path: 'signIn',
+          path: '/auth/signIn',
           method: RequestMethod.POST,
         },
       )
@@ -44,6 +47,7 @@ export class AppModule {
         TodoListController,
         TodoController,
         AuthController,
+        HealthController,
       );
   }
 }

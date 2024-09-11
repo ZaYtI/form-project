@@ -14,15 +14,13 @@ export class LoggerMiddleware implements NestMiddleware {
   ) {}
 
   use(req: any, res: any, next: () => void) {
-    console.log('Request...');
-
     const authHeader = req.headers.authorization;
 
     if (!authHeader) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Token missing');
     }
 
-    const [scheme, token] = authHeader.split('Token Missing');
+    const [scheme, token] = authHeader.split(' ');
 
     if (scheme !== 'Bearer' || !token) {
       throw new UnauthorizedException('Invalid token format');
