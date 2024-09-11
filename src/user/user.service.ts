@@ -3,6 +3,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
+import { plainToClass } from 'class-transformer';
+import { UserResponseDto } from './dto/response-user.dto';
 
 @Injectable()
 export class UserService {
@@ -12,7 +14,11 @@ export class UserService {
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-    return this.userRepository.save(createUserDto);
+    const user = await this.userRepository.save(createUserDto);
+
+    return plainToClass(UserResponseDto, user, {
+      excludeExtraneousValues: true,
+    });
   }
 
   async findAll(): Promise<User[]> {
@@ -24,14 +30,10 @@ export class UserService {
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
-    const user = await this.userRepository.findOneByOrFail({ id });
+    console.log(updateUserDto);
+    await this.userRepository.update(id, updateUserDto);
 
-    user.email = updateUserDto.email;
-    user.birthDate = updateUserDto.birthdate;
-    user.firstName = updateUserDto.firstName;
-    user.lastName = updateUserDto.lastName;
-
-    return this.userRepository.save(user);
+    return this.findOne(id);
   }
 
   async remove(id: number) {

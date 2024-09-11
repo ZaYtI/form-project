@@ -4,7 +4,6 @@ import * as bcrypt from 'bcrypt';
 import { UserService } from 'src/user/user.service';
 import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
-import { User } from 'src/user/entities/user.entity';
 import { Payload } from './type/payload.type';
 import { UserRole } from 'src/user/enum/roles.enum';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
@@ -16,7 +15,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async signUp(createUserDto: CreateUserDto): Promise<User> {
+  async signUp(createUserDto: CreateUserDto) {
     createUserDto.password = await bcrypt.hash(createUserDto.password, 10);
     return this.userService.create(createUserDto);
   }
@@ -40,7 +39,7 @@ export class AuthService {
     );
   }
 
-  async validateUser(loginDto: LoginDto): Promise<User> {
+  async validateUser(loginDto: LoginDto) {
     const existingUser = await this.userService.findByEmail(loginDto.email);
 
     if (!existingUser) {

@@ -21,7 +21,6 @@ import { RolesGuard } from './roles/roles.guard';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Roles(UserRole.ADMIN)
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
@@ -39,9 +38,9 @@ export class UserController {
     return this.userService.findOne(+id);
   }
 
-  @Roles(UserRole.ADMIN)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    console.log(updateUserDto);
     return this.userService.update(+id, updateUserDto);
   }
 
